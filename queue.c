@@ -34,7 +34,20 @@ void q_free(queue_t *q)
 {
     /* TODO: How about freeing the list elements and the strings? */
     /* Free queue structure */
-    free(q);
+
+    if (q) {
+        if (q->head) {
+            while (q->head != NULL) {
+                tmp = q->head;
+                q->head = q->head->next;
+
+                free(tmp->value);
+                free(tmp);
+            }
+        }
+
+        free(q);
+    }
 }
 
 /*
@@ -94,17 +107,18 @@ bool q_insert_tail(queue_t *q, char *s)
 
     if (newl) {
         newl->next = NULL;
-        q->tail->next = newl;
-        q->tail = newl;
-
         newl->value = malloc(s_size);
 
-        if (newl->value) {
-            /*use strlcpy instead*/
-            strlcpy(newl->value, s, s_size);
-            q->size += 1;
-            return true;
+        if (q->tail) {
+            q->tail->next = newl;
         }
+        q->tail = newl;
+        /*use strlcpy instead*/
+        strlcpy(newl->value, s, s_size);
+        q->size += 1;
+        if (q->size == 1)
+            q->head = q->tail;
+        return true;
     }
 
     return false;
