@@ -62,7 +62,7 @@ bool q_insert_head(queue_t *q, char *s)
     list_ele_t *newh;
     newh = malloc(sizeof(list_ele_t));
 
-    int s_size = sizeof(s);
+    int s_size = sizeof(s) * sizeof(char *);
 
     /* TODO: What should you do if the q is NULL? */
     /* Don't forget to allocate space for the string and copy it */
@@ -103,7 +103,7 @@ bool q_insert_tail(queue_t *q, char *s)
     list_ele_t *newl;
     newl = malloc(sizeof(list_ele_t));
 
-    int s_size = sizeof(s);
+    int s_size = sizeof(s) * sizeof(char *);
 
     if (newl) {
         newl->next = NULL;
@@ -141,15 +141,18 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
         if (sp) {
             /*using strlcpy instead*/
             strlcpy(sp, q->head->value, bufsize);
-            tmp = q->head;
-            q->head = q->head->next;
-
-            free(tmp->value);
-            free(tmp);
-
-            q->size -= 1;
-            return true;
         }
+        tmp = q->head;
+        q->head = q->head->next;
+        q->size -= 1;
+
+        if (!(q->head))
+            q->tail = q->head;
+
+        free(tmp->value);
+        free(tmp);
+
+        return true;
     }
 
     return false;
