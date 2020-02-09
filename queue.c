@@ -112,14 +112,19 @@ bool q_insert_tail(queue_t *q, char *s)
         if (q->tail) {
             q->tail->next = newl;
         }
-        q->tail = newl;
-        /*use strlcpy instead*/
-        strlcpy(newl->value, s, s_size);
-        q->size += 1;
-        if (q->size == 1)
-            q->head = q->tail;
-        return true;
+
+        if (newl->value) {
+            q->tail = newl;
+            /*use strlcpy instead*/
+            strlcpy(newl->value, s, s_size);
+            q->size += 1;
+            if (q->size == 1)
+                q->head = q->tail;
+            return true;
+        }
     }
+
+    free(newl);
 
     return false;
 }
