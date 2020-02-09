@@ -59,31 +59,32 @@ void q_free(queue_t *q)
  */
 bool q_insert_head(queue_t *q, char *s)
 {
-    list_ele_t *newh;
-    newh = malloc(sizeof(list_ele_t));
+    if (q) {
+        list_ele_t *newh;
+        newh = malloc(sizeof(list_ele_t));
 
-    int s_size = sizeof(s) * sizeof(char *);
+        int s_size = sizeof(s) * sizeof(char *);
 
-    /* TODO: What should you do if the q is NULL? */
-    /* Don't forget to allocate space for the string and copy it */
-    /* What if either call to malloc returns NULL? */
+        /* TODO: What should you do if the q is NULL? */
+        /* Don't forget to allocate space for the string and copy it */
+        /* What if either call to malloc returns NULL? */
 
-    if (newh) {
-        newh->next = q->head;
-        q->head = newh;
+        if (newh) {
+            newh->next = q->head;
+            q->head = newh;
 
-        newh->value = malloc(s_size);
+            newh->value = malloc(s_size);
 
-        if (newh->value) {
-            /*use strlcpy instead*/
-            strlcpy(newh->value, s, s_size);
-            q->size += 1;
-            if (q->size == 1)
-                q->tail = q->head;
-            return true;
+            if (newh->value) {
+                /*use strlcpy instead*/
+                strlcpy(newh->value, s, s_size);
+                q->size += 1;
+                if (q->size == 1)
+                    q->tail = q->head;
+                return true;
+            }
         }
     }
-
     return false;
 }
 
@@ -100,32 +101,33 @@ bool q_insert_tail(queue_t *q, char *s)
     /* Remember: It should operate in O(1) time */
     /* TODO: Remove the above comment when you are about to implement. */
 
-    list_ele_t *newl;
-    newl = malloc(sizeof(list_ele_t));
+    if (q) {
+        list_ele_t *newl;
+        newl = malloc(sizeof(list_ele_t));
 
-    int s_size = sizeof(s) * sizeof(char *);
+        int s_size = sizeof(s) * sizeof(char *);
 
-    if (newl) {
-        newl->next = NULL;
-        newl->value = malloc(s_size);
+        if (newl) {
+            newl->next = NULL;
+            newl->value = malloc(s_size);
 
-        if (q->tail) {
-            q->tail->next = newl;
+            if (q->tail) {
+                q->tail->next = newl;
+            }
+
+            if (newl->value) {
+                q->tail = newl;
+                /*use strlcpy instead*/
+                strlcpy(newl->value, s, s_size);
+                q->size += 1;
+                if (q->size == 1)
+                    q->head = q->tail;
+                return true;
+            }
         }
 
-        if (newl->value) {
-            q->tail = newl;
-            /*use strlcpy instead*/
-            strlcpy(newl->value, s, s_size);
-            q->size += 1;
-            if (q->size == 1)
-                q->head = q->tail;
-            return true;
-        }
+        free(newl);
     }
-
-    free(newl);
-
     return false;
 }
 
