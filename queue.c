@@ -111,11 +111,10 @@ bool q_insert_tail(queue_t *q, char *s)
             newl->next = NULL;
             newl->value = malloc(s_size);
 
-            if (q->tail) {
-                q->tail->next = newl;
-            }
-
             if (newl->value) {
+                if (q->tail) {
+                    q->tail->next = newl;
+                }
                 q->tail = newl;
                 /*use strlcpy instead*/
                 strlcpy(newl->value, s, s_size);
@@ -205,6 +204,39 @@ void q_reverse(queue_t *q)
     }
 }
 
+list_ele_t *merge_sort(list_ele_t *start)
+{
+    if (!start || !start->next)
+        return start;
+    list_ele_t *left = start;
+    list_ele_t *right = left->next;
+    left->next = NULL;
+
+    left = merge_sort(left);
+    right = merge_sort(right);
+
+    for (list_ele_t *merge = NULL; left || right;) {
+        if (!right || (left && (strcasecmp(left->value, right->value) < 0))) {
+            if (!merge) {
+                start = merge = left;
+            } else {
+                merge->next = left;
+                merge = merge->next;
+            }
+            left = left->next;
+        } else {
+            if (!merge) {
+                start = merge = right;
+            } else {
+                merge->next = right;
+                merge = merge->next;
+            }
+            right = right->next;
+        }
+    }
+    return start;
+}
+
 /*
  * Sort elements of queue in ascending order
  * No effect if q is NULL or empty. In addition, if q has only one
@@ -214,4 +246,14 @@ void q_sort(queue_t *q)
 {
     /* TODO: You need to write the code for this function */
     /* TODO: Remove the above comment when you are about to implement. */
+
+    if (q && q->head && q->head != q->tail) {
+        q->head = merge_sort(q->head);
+
+        q->tail = q->head;
+
+        while (q->tail->next != NULL) {
+            q->tail = q->tail->next;
+        }
+    }
 }
